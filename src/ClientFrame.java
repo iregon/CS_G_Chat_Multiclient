@@ -3,6 +3,8 @@ import javax.swing.*;
 
 public class ClientFrame extends JFrame implements Observer{
 	
+	private static final long serialVersionUID = 1L;
+
 	public ClientFrame() {
 		super("Client");
 		
