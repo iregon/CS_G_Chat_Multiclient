@@ -42,4 +42,8 @@ public class ServerFrame extends JFrame{
         
         p_mainPanel.add(tp_tabbedPane);
 	}
+	
+	public void addLog(String text) {
+		ta_log.append(text);
+	}
 }

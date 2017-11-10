@@ -17,8 +17,12 @@ public class MultiThreadChatServerSync {
 	//  private static final clientThread[] threads = new clientThread[maxClientsCount];
   
 	private static final ArrayList<clientThread> threads = new ArrayList<clientThread>();
+	private static final ArrayList<Room> rooms = new ArrayList<Room>();
 
 	public static void main(String args[]) {
+		
+		//Add default room
+		rooms.add(new Room("Main"));
 
 		// The default port number.
 		int portNumber = 2222;
