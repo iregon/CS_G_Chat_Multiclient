@@ -39,11 +39,12 @@ public class MultiThreadChatServerSync {
 		try {
 			serverSocket = new ServerSocket(portNumber);
 		} catch (IOException e) {
-			System.out.println(e);
+			System.err.println("ERRORE: " + e.getMessage());
 		}
 		
 		//Create the GUI
-		JFrame frame = new ServerFrame(threads);
+		ServerFrame sf = new ServerFrame();
+		JFrame frame = sf;
 		frame.setTitle("MyChatApp Server - " + serverSocket.getLocalSocketAddress());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -58,7 +59,8 @@ public class MultiThreadChatServerSync {
 		while (true) {
 			try {
 				clientSocket = serverSocket.accept();
-        
+				
+				sf.addLog("New user: " + clientSocket.getRemoteSocketAddress());
 				threads.add(new clientThread(clientSocket, threads));
 				threads.get(threads.size() - 1).start();
 //		        int i = 0;
@@ -75,7 +77,7 @@ public class MultiThreadChatServerSync {
 //		          clientSocket.close();
 //		        }
 			} catch (IOException e) {
-				System.out.println(e);
+				System.err.println("ERRORE: " + e.getMessage());
 			}
 		}
 	}  

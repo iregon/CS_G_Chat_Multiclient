@@ -4,16 +4,16 @@ import javax.swing.*;
 
 public class ServerFrame extends JFrame{
 	
-	private ArrayList<clientThread> threads = new ArrayList<clientThread>();
+//	private ArrayList<clientThread> threads = new ArrayList<clientThread>();
 	private JPanel p_mainPanel;
 	private JPanel p_log;
 	private JPanel p_manageUsers;
 	private JTextArea ta_log;
 	private JTabbedPane tp_tabbedPane;
 
-	public ServerFrame(ArrayList<clientThread> threads) {
+	public ServerFrame(/*ArrayList<clientThread> threads*/) {
 		super();
-		this.threads = threads;
+//		this.threads = threads;
 		buildGUI();
 	}
 	
@@ -37,7 +37,6 @@ public class ServerFrame extends JFrame{
         
         p_manageUsers = new JPanel();
         
-        
         tp_tabbedPane.addTab("Manage users", p_manageUsers);
         
         p_mainPanel.add(tp_tabbedPane);
@@ -45,5 +44,6 @@ public class ServerFrame extends JFrame{
 	
 	public void addLog(String text) {
 		ta_log.append(text);
+		ta_log.append("\n");
 	}
 }

@@ -31,15 +31,15 @@ public class clientThread extends Thread{
 	    	String name;
 	      
 	    	while (true) {
-	    		os.writeObject(new Message("MSG", null, this.clientName, this.room.getName(), "Insert a name"));
+	    		sendMessage(new Message("MSG", null, this.clientName, this.room.getName(), "Insert a name"));
 	    		name = ((Message)is.readObject()).getText().trim();
 	    		
 	    		if (name.indexOf('@') == -1) break; 
-	    		else os.writeObject(new Message("ERR", null, this.clientName, this.room.getName(), "The name should not contain '@' character."));
+	    		else sendMessage(new Message("ERR", null, this.clientName, this.room.getName(), "The name should not contain '@' character."));
     		}
 	
 	    	/* Welcome the new the client. */
-	    	os.writeObject(new Message("MSG", null, this.clientName, this.room.getName(), "Welcome " + name + " to our chat room.\nTo leave enter /quit in a new line."));
+	    	sendMessage(new Message("MSG", null, this.clientName, this.room.getName(), "Welcome " + name + " to our chat room.\nTo leave enter /quit in a new line."));
 	    	synchronized (this) {
 //	        	for (int i = 0; i < threads.size(); i++) {
 //	          		if (threads.get(i) == this) {
@@ -50,7 +50,7 @@ public class clientThread extends Thread{
 	        
 	    		for (int i = 0; i < threads.size(); i++) {
 	    			if (threads.get(i) != null && threads.get(i) != this) {
-	    				threads.get(i).os.writeObject(new Message("MSG", this.clientName, this.room.getName(), "*** A new user " + name + " entered the chat room !!! ***"));
+	    				threads.get(i).sendMessage(new Message("MSG", this.clientName, this.room.getName(), "*** A new user " + name + " entered the chat room !!! ***"));
 	    			}
 	    		}
 	    	}
@@ -69,12 +69,12 @@ public class clientThread extends Thread{
 							synchronized (this) {
 								for (int i = 0; i < threads.size(); i++) {
 									if (threads.get(i) != null && threads.get(i) != this && threads.get(i).clientName != null && threads.get(i).clientName.equals(words[0])) {
-										threads.get(i).os.writeObject(new Message("MSG", this.clientName, words[0], this.room.getName(), "<" + name + "> " + words[1]));
+										threads.get(i).sendMessage(new Message("MSG", this.clientName, words[0], this.room.getName(), "<" + name + "> " + words[1]));
 										/*
 										 * Echo this message to let the client know the private
 										 * message was sent.
 										 */
-										this.os.writeObject(new Message("MSG", this.clientName, words[0], this.room.getName(), ">" + name + "> " + words[1]));
+										this.sendMessage(new Message("MSG", this.clientName, words[0], this.room.getName(), ">" + name + "> " + words[1]));
 										break;
 									}
 								}
@@ -86,7 +86,7 @@ public class clientThread extends Thread{
 	    				synchronized (this) {
 	    					for (int i = 0; i < threads.size(); i++) {
 	    						if (threads.get(i) != null && threads.get(i).clientName != null) {
-	    							threads.get(i).os.writeObject(new Message("MSG", this.clientName, this.room.getName(), "<" + name + "> " + msg.getText()));
+	    							threads.get(i).sendMessage(new Message("MSG", this.clientName, this.room.getName(), "<" + name + "> " + msg.getText()));
 	    						}
 	    					}
 	    				}
@@ -95,11 +95,11 @@ public class clientThread extends Thread{
 	    	synchronized (this) {
 	    		for (int i = 0; i < threads.size(); i++) {
 	    			if (threads.get(i) != null && threads.get(i) != this && threads.get(i).clientName != null) {
-	    				threads.get(i).os.writeObject(new Message("MSG", this.clientName, this.room.getName(), "*** The user " + name + " is leaving the chat room !!! ***"));
+	    				threads.get(i).sendMessage(new Message("MSG", this.clientName, this.room.getName(), "*** The user " + name + " is leaving the chat room !!! ***"));
 	    			}
 	    		}
 	    	}
-	    	os.writeObject(new Message("MSG", this.clientName, this.room.getName(), "*** Bye " + name + " ***"));
+	    	sendMessage(new Message("MSG", this.clientName, this.room.getName(), "*** Bye " + name + " ***"));
 	
 	    	/*
 	      	* Clean up. Set the current thread variable to null so that a new client
@@ -123,4 +123,12 @@ public class clientThread extends Thread{
 	    		System.err.println("ERRORE: " + e.getMessage());
 	    	}
 	  }
+	
+	private void sendMessage(Message msg) {
+		try {
+			os.writeObject(msg);
+		} catch (IOException e) {
+			System.err.println("ERRORE: " + e.getMessage());
+		}
+	}
 }
