@@ -5,7 +5,9 @@ import java.util.*;
 /** Chat client access */
 class ChatAccess extends Observable {
     private Socket socket;
-    private OutputStream outputStream;
+    private ObjectOutputStream outputStream;
+    private String name = null;
+    private Room room = new Room("Main");
 
     @Override
     public void notifyObservers(Object arg) {
@@ -16,18 +18,18 @@ class ChatAccess extends Observable {
     /** Create socket, and receiving thread */
     public void InitSocket(String server, int port) throws IOException {
         socket = new Socket(server, port);
-        outputStream = socket.getOutputStream();
+        outputStream = new ObjectOutputStream(socket.getOutputStream());
 
         Thread receivingThread = new Thread() {
             @Override
             public void run() {
                 try {
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
+                    ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
                     String line;
-                    while ((line = reader.readLine()) != null)
+                    while ((line = ((Message)reader.readObject()).getText()) != null)
                         notifyObservers(line);
                 } catch (IOException ex) {
+                } catch (ClassNotFoundException ex) {
                     notifyObservers(ex);
                 }
             }
@@ -35,12 +37,13 @@ class ChatAccess extends Observable {
         receivingThread.start();
     }
 
-    private static final String CRLF = "\r\n"; // newline
+//    private static final String CRLF = "\r\n"; // newline
 
     /** Send a line of text */
     public void send(String text) {
         try {
-            outputStream.write((text + CRLF).getBytes());
+        	if(name == null) name = text;
+            outputStream.writeObject(new Message("MSG", name, room.getName(), text));
             outputStream.flush();
         } catch (IOException ex) {
             notifyObservers(ex);
