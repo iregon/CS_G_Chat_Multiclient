@@ -1,34 +1,34 @@
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 // For every client's connection we call this class
 public class clientThread extends Thread{
 	private String clientName = null;
-	private DataInputStream is = null;
+	private BufferedReader is = null;
 	private PrintStream os = null;
 	private Socket clientSocket = null;
-	private final clientThread[] threads;
+	private final ArrayList<clientThread> threads;
 	private int maxClientsCount;
 	
-	public clientThread(Socket clientSocket, clientThread[] threads) {
+	public clientThread(Socket clientSocket, ArrayList<clientThread> threads) {
 	    this.clientSocket = clientSocket;
 	    this.threads = threads;
-	    maxClientsCount = threads.length;
+//	    maxClientsCount = threads.size();
 	  }
 	
 	  public void run() {
 	    int maxClientsCount = this.maxClientsCount;
-	    clientThread[] threads = this.threads;
+	    ArrayList<clientThread> threads = this.threads;
 	
 	    try {
 	      /*
 	       * Create input and output streams for this client.
 	       */
-	      is = new DataInputStream(clientSocket.getInputStream());
+	      is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 	      os = new PrintStream(clientSocket.getOutputStream());
 	      String name;
+	      
 	      while (true) {
 	        os.println("Enter your name.");
 	        name = is.readLine().trim();
@@ -43,14 +43,15 @@ public class clientThread extends Thread{
 	      os.println("Welcome " + name
 	          + " to our chat room.\nTo leave enter /quit in a new line.");
 	      synchronized (this) {
-	        for (int i = 0; i < maxClientsCount; i++) {
-	          if (threads[i] != null && threads[i] == this) {
+	        for (int i = 0; i < threads.size(); i++) {
+	          if (threads.get(i) == this) {
 	            clientName = "@" + name;
 	            break;
 	          }
 	        }
-	        for (int i = 0; i < maxClientsCount; i++) {
-	          if (threads[i] != null && threads[i] != this) {
+	        
+	        for (int i = 0; i < threads.size(); i++) {
+	          if (threads.get(i) != null && threads.get(i) != this) {
 	            threads[i].os.println("*** A new user " + name
 	                + " entered the chat room !!! ***");
 	          }

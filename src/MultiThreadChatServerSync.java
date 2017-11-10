@@ -1,6 +1,7 @@
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.net.ServerSocket;
 
 // the Server class
@@ -11,8 +12,10 @@ public class MultiThreadChatServerSync {
   private static Socket clientSocket = null;
 
   // This chat server can accept up to maxClientsCount clients' connections.
-  private static final int maxClientsCount = 10;
-  private static final clientThread[] threads = new clientThread[maxClientsCount];
+//  private static final int maxClientsCount = 10;
+//  private static final clientThread[] threads = new clientThread[maxClientsCount];
+  
+  private static final ArrayList<clientThread> threads = new ArrayList<clientThread>();
 
   public static void main(String args[]) {
 
@@ -42,19 +45,22 @@ public class MultiThreadChatServerSync {
     while (true) {
       try {
         clientSocket = serverSocket.accept();
-        int i = 0;
-        for (i = 0; i < maxClientsCount; i++) {
-          if (threads[i] == null) {
-            (threads[i] = new clientThread(clientSocket, threads)).start();
-            break;
-          }
-        }
-        if (i == maxClientsCount) {
-          PrintStream os = new PrintStream(clientSocket.getOutputStream());
-          os.println("Server too busy. Try later.");
-          os.close();
-          clientSocket.close();
-        }
+        
+        threads.add(new clientThread(clientSocket, threads));
+        threads.get(threads.size() - 1).start();
+//        int i = 0;
+//        for (i = 0; i < maxClientsCount; i++) {
+//          if (threads[i] == null) {
+//            (threads[i] = new clientThread(clientSocket, threads)).start();
+//            break;
+//          }
+//        }
+//        if (i == maxClientsCount) {
+//          PrintStream os = new PrintStream(clientSocket.getOutputStream());
+//          os.println("Server too busy. Try later.");
+//          os.close();
+//          clientSocket.close();
+//        }
       } catch (IOException e) {
         System.out.println(e);
       }

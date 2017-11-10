@@ -6,7 +6,7 @@ public class Client {
 
     public static void main(String[] args) {
         String server = args[0];
-        int port =2222;
+        int port = 2222;
         ChatAccess access = new ChatAccess();
 
         JFrame frame = new ClientFrame(access);
