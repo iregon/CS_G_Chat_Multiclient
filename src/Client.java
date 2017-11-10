@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import javax.swing.*;
 
 public class Client {
 	
@@ -8,6 +9,7 @@ public class Client {
 	public Client(String host, int port) {
 		try {
 			con = new Socket(host, port);
+			JFrame frame = new ClientFrame();
 		}
 		catch(Exception e) {
 			
